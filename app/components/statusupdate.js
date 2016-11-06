@@ -1,4 +1,5 @@
 import React from 'react';
+import {Link} from 'react-router';
 import {unixTimeToString} from '../util';
 export default class StatusUpdate extends React.Component { render() {
 return ( <div>
@@ -9,7 +10,9 @@ return ( <div>
                 PIC
               </div>
               <div className="media-body">
-<a href="#">{this.props.author.fullName}</a>
+<Link to={"/profile/" + this.props.author._id}>
+  {this.props.author.fullName}
+</Link>
 <br /> {unixTimeToString(this.props.postDate)} · {this.props.location} · <span
                   className="glyphicon glyphicon-user"></span>
               </div>

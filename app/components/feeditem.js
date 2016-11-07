@@ -67,10 +67,12 @@ return liked;
 
 
     render() {
-
-
         var data = this.state;
         var contents;
+        var likeButtonText = "Like";
+        if(this.didUserLike()){
+          likeButtonText = "Unlike";
+        }
         switch (data.type) {
             case "statusUpdate":
                 // Create a StatusUpdate. Dynamically created
@@ -101,7 +103,7 @@ return liked;
                                 <li>
                                     <a href="#" onClick={(e) => this.handleLikeClick(e)}>
                                         <span className="glyphicon glyphicon-thumbs-up"></span>
-                                        Like</a>
+                                        {likeButtonText}</a>
                                 </li>
                                 <li>
                                     <a href="#">

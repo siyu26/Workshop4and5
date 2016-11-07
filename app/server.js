@@ -102,7 +102,8 @@ export function postComment(feedItemId, author, contents, cb) {
   feedItem.comments.push({
     "author": author,
     "contents": contents,
-    "postDate": new Date().getTime()
+    "postDate": new Date().getTime(),
+    "likeCounter": []
   });
   writeDocument('feedItems', feedItem);
   // Return a resolved version of the feed item so React can
@@ -122,6 +123,16 @@ export function likeFeedItem(feedItemId, userId, cb) {
   // Return a resolved version of the likeCounter
   emulateServerReturn(feedItem.likeCounter.map((userId) =>
                         readDocument('users', userId)), cb);
+}
+
+export function likeComment(feedItemId, commentIndex, user, cb){
+  var feedItem = readDocument('feedItems',feedItemId);
+
+  feedItem.comments[commentIndex].likeCounter.push(user);
+
+  writeDocument('feedItems',feedItem);
+
+  emulateServerReturn(feedItem.comments[commentIndex].likeCounter.map((id)=>readDocument('users',id)),cb);
 }
 
 /**
@@ -147,5 +158,26 @@ export function unlikeFeedItem(feedItemId, userId, cb) {
 }
   // Return a resolved version of the likeCounter
   emulateServerReturn(feedItem.likeCounter.map((userId) =>
+                        readDocument('users', userId)), cb);
+}
+
+export function unlikeComment(feedItemId, commentIndex, userId, cb) {
+  var feedItem = readDocument('feedItems', feedItemId);
+  // Find the array index that contains the user's ID.
+  // (We didn't *resolve* the FeedItem object, so
+  // it is just an array of user IDs)
+  var userIndex = feedItem.comments[commentIndex].likeCounter.indexOf(userId);
+  // -1 means the user is *not* in the likeCounter,
+  // so we can simply avoid updating
+  // anything if that is the case: the user already
+  // doesn't like the item.
+  if (userIndex !== -1) {
+    // 'splice' removes items from an array. This
+    // removes 1 element starting from userIndex.
+    feedItem.comments[commentIndex].likeCounter.splice(userIndex, 1);
+    writeDocument('feedItems', feedItem);
+}
+  // Return a resolved version of the likeCounter
+  emulateServerReturn(feedItem.comments[commentIndex].likeCounter.map((userId) =>
                         readDocument('users', userId)), cb);
 }
